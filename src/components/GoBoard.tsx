@@ -6,13 +6,15 @@ interface GoBoardProps {
   onPlaceStone?: (x: number, y: number) => void;
   currentPlayer?: 'black' | 'white';
   stones?: Array<{ x: number; y: number; color: 'black' | 'white' }>;
+  isAIThinking?: boolean;
 }
 
 export const GoBoard: React.FC<GoBoardProps> = ({
   size = 19,
   onPlaceStone,
   currentPlayer = 'black',
-  stones = []
+  stones = [],
+  isAIThinking = false
 }) => {
   const [boardSize, setBoardSize] = useState(600);
   const cellSize = boardSize / (size + 1);
@@ -31,7 +33,7 @@ export const GoBoard: React.FC<GoBoardProps> = ({
   }, []);
 
   const handleClick = (e: any) => {
-    if (!onPlaceStone) return;
+    if (!onPlaceStone || isAIThinking) return;
 
     const stage = e.target.getStage();
     const pointerPos = stage.getPointerPosition();

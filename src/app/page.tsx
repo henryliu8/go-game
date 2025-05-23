@@ -13,6 +13,7 @@ export default function Home() {
     aiLevel,
     isGameOver,
     winner,
+    isAIThinking,
     placeStone,
     pass,
     resign,
@@ -48,6 +49,9 @@ export default function Home() {
                 <p>黑棋提子：{capturedBlack}</p>
                 <p>白棋提子：{capturedWhite}</p>
                 <p>AI等级：{rankLevels[aiLevel - 1]}</p>
+                {isAIThinking && (
+                  <p className="text-blue-500 animate-pulse">AI 正在思考...</p>
+                )}
               </div>
             </div>
 
@@ -115,6 +119,7 @@ export default function Home() {
               stones={stones}
               onPlaceStone={placeStone}
               currentPlayer={currentPlayer}
+              isAIThinking={isAIThinking}
             />
           </div>
         </div>
