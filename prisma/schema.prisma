@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  blackPlayer Player      @relation("BlackPlayer", fields: [blackId], references: [id])
+  blackId     String
+  whitePlayer Player      @relation("WhitePlayer", fields: [whiteId], references: [id])
+  whiteId     String
+  moves       Move[]
+  result      GameResult?
+  status      GameStatus  @default(IN_PROGRESS)
+}
+
+model Player {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  rank        Int      // 围棋段位，例如：1-9段
+  isAI        Boolean  @default(false)
+  gamesAsBlack Game[]  @relation("BlackPlayer")
+  gamesAsWhite Game[]  @relation("WhitePlayer")
+}
+
+model Move {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  player    String   // "black" or "white"
+  x         Int      // 横坐标 (0-18)
+  y         Int      // 纵坐标 (0-18)
+  moveNumber Int     // 手数
+  comment   String?  // 对该手的评论
+}
+
+model GameResult {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String   @unique
+  winner    String   // "black" or "white"
+  score     Float    // 比分差距（子数）
+  reason    String   // 胜负原因
+  analysis  String   // 对局分析
+}
+
+enum GameStatus {
+  IN_PROGRESS
+  FINISHED
+  RESIGNED
+  TIMEOUT
+}
